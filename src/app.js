@@ -1,32 +1,10 @@
 import { ManagementClient } from '@kontent-ai/management-sdk';
+import { getCustomAppContext } from "@kontent-ai/custom-app-sdk";
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const settings = await fetch('/config.json').then(res => res.json());
+const response = await getCustomAppContext();
 
-  if (!settings.environmentId || !settings.apiKey) {
-    console.error('Missing API key or Environment ID in config.json');
-    return;
-  }
-
-  const managementClient = new ManagementClient({
-    environmentId: settings.environmentId,
-    apiKey: settings.apiKey
-  });
-
-  const workflowsResponse = await managementClient.listWorkflows().toPromise();
-  const container = document.getElementById('mermaid-container');
-
-  workflowsResponse.data.forEach((workflow) => {
-    let mermaidDiagram = `flowchart TD\n`;
-
-    workflow.steps.forEach(step => {
-      mermaidDiagram += `${step.codename}("${step.name}") -->|\n`;
-    });
-
-    const mermaidContainer = document.createElement('div');
-    mermaidContainer.className = 'mermaid';
-    mermaidContainer.innerHTML = mermaidDiagram;
-    container.appendChild(mermaidContainer);
-    mermaid.init(undefined, mermaidContainer);
-  });
-});
+if (response.isError) {
+  console.error({ errorCode: response.code, description: response.description });
+} else {
+  console.log({ config: response.config, context: response.context });
+}
