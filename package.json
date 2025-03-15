@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@kontent-ai/custom-app-sdk": "^1.0.0"
+  }
+}
